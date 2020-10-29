@@ -3,13 +3,19 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django import forms 
+from .models import *
 
-from .models import User
-
+class NewListingFor(forms.Form):
+    title = forms.CharField()
+    description = forms.CharField(widget=forms.Textarea)
+    image = forms.URLField()
+    starting_bid = forms.IntegerField(label='Starting Bid',min_value=5)
 
 def index(request):
-    return render(request, "auctions/index.html")
-
+    return render(request, "auctions/index.html",{
+        "listings":Listing.objects.all()
+    })
 
 def login_view(request):
     if request.method == "POST":
@@ -40,7 +46,6 @@ def register(request):
     if request.method == "POST":
         username = request.POST["username"]
         email = request.POST["email"]
-
         # Ensure password matches confirmation
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
@@ -61,3 +66,26 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
+
+def create(request):
+    if request.method == "POST":
+        form = NewListingFor(request.POST)
+        if form.is_valid():
+            user = User.objects.get(pk=request.user.id)
+            new_listing = Listing(
+                master=user,
+                title=request.POST['title'],
+                description=request.POST['description'],
+                image=request.POST['image'],
+                bid=request.POST['starting_bid']
+            )
+            new_listing.save()
+            user.listings.add(new_listing)
+            return HttpResponseRedirect(reverse("index"))
+
+    return render (request,"auctions/create.html",{
+        "form":NewListingFor()
+    })
+
+def detail(request):
+    pass
