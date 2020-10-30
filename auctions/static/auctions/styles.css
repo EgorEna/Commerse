@@ -16,3 +16,80 @@ textarea {
     display: block;
     margin-bottom: 10px;
 }
+
+.listing_link {
+    display: block;
+    color: black;
+    text-decoration: none;
+    padding: 30px;
+    border:1px solid #ededed;
+    margin-bottom: 20px;
+}
+
+.listing_link:hover{
+    color: black;
+    text-decoration: none;
+    background-color: #edf2f2;
+}
+
+ .listing{
+    display: flex;
+}
+ .listing img {
+    width: 200px;
+    height: 200px;
+}
+ .listing p {
+    font-size: 20px;
+}
+
+ .listing .img {
+    width: 30%;
+}
+
+.listing .date {
+    font-size: 15px;
+    color: grey
+}
+
+.listing .description {
+    width: 300px;
+    font-size: 15px;
+    margin-bottom: 20px;
+}
+
+.error {
+    color:red;
+}
+
+.close_listing {
+    margin-top: 20px;
+}
+
+.price {
+    font-size: 30px;
+}
+
+form.bid {
+    margin-top: 20px;
+    margin-bottom: 50px;
+}
+
+input.bid {
+    width: 100%;
+    border-radius: 5px;
+    border: 2px solid #e6e6e6;
+    height: 35px;
+    padding-left: 10px;
+    outline: none;
+    font-size: 20px;
+}
+
+input.bid:hover {
+    outline: none;
+}
+
+section.comments {
+    min-height: 400px;
+    
+}

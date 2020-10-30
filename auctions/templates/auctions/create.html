@@ -5,6 +5,9 @@ Create Listing
 
 {% block body %}
     <h2>Create New Listing</h2>
+    {% if message %}
+        <span class="error">{{message}}</span>
+    {% endif %}
     <form action="{% url 'create' %}" method="POST">
         {% csrf_token %}
         {{ form }}

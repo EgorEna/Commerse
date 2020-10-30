@@ -5,6 +5,8 @@ from django.shortcuts import render
 from django.urls import reverse
 from django import forms 
 from .models import *
+from datetime import *
+import time
 
 class NewListingFor(forms.Form):
     title = forms.CharField()
@@ -73,7 +75,7 @@ def create(request):
         if form.is_valid():
             user = User.objects.get(pk=request.user.id)
             new_listing = Listing(
-                master=user,
+                owner=user,
                 title=request.POST['title'],
                 description=request.POST['description'],
                 image=request.POST['image'],
@@ -82,10 +84,19 @@ def create(request):
             new_listing.save()
             user.listings.add(new_listing)
             return HttpResponseRedirect(reverse("index"))
-
+        else:
+            return render(request,"auctions/create.html",{
+                "form": NewListingFor(request.POST),
+                "message": "Incorrectly entered data, make sure you entered everything correctly."
+            })
     return render (request,"auctions/create.html",{
         "form":NewListingFor()
     })
 
-def detail(request):
-    pass
+def detail(request,listing_id):
+    listing = Listing.objects.get(pk=listing_id)
+    user = User.objects.get(pk=request.user.id)
+    return render(request,"auctions/detail.html",{
+        'listing':listing,
+        'is_owner':listing.owner == user,
+    })
