@@ -1,8 +1,8 @@
 # Byte-compiled / optimized / DLL files
-__pycache__/
+auctions/__pycache__/
 *.py[cod]
 
-
+commerce/__pycache__/*.py[cod]
 # C extensions
 *.so
 
