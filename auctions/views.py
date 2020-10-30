@@ -95,8 +95,47 @@ def create(request):
 
 def detail(request,listing_id):
     listing = Listing.objects.get(pk=listing_id)
-    user = User.objects.get(pk=request.user.id)
+    if request.user.is_authenticated:
+        user = User.objects.get(pk=request.user.id)
+        return render(request,"auctions/detail.html",{
+            'listing':listing,
+            'is_owner':listing.owner == user,
+        })
+    return render(request,"auctions/detail.html",{
+            'listing':listing,
+    })
+
+def watchlist(request):
+    listings = request.user.watchlist.all()
+    return render(request,"auctions/watchlist.html",{
+        "listings":listings,
+    })
+
+def add(request,listing_id):
+    listing = Listing.objects.get(pk=listing_id)
+    if listing in request.user.watchlist.all():
+        return render(request,"auctions/detail.html",{
+        'listing':listing,
+        'is_owner':listing.owner == request.user,
+        'message': {
+            'type':'error',
+            'message':'Already added to watchlist',
+        }
+    })    
+    request.user.watchlist.add(listing)
     return render(request,"auctions/detail.html",{
         'listing':listing,
-        'is_owner':listing.owner == user,
+        'is_owner':listing.owner == request.user,
+        'message': {
+            'type':'succes',
+            'message': 'Succesfully added',
+        }
     })
+
+def remove(request,listing_id):
+    if request.user.is_authenticated:
+        listing = Listing.objects.get(pk=listing_id)
+        request.user.watchlist.remove(listing)
+        return HttpResponseRedirect(reverse("watchlist"))
+    else:
+        raise Http404("You're not is_authenticated for such action")

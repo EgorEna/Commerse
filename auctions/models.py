@@ -3,7 +3,7 @@ from django.db import models
 
 
 class User(AbstractUser):
-    watchlist = models.ManyToManyField('Listing',related_name='watcherss')
+    watchlist = models.ManyToManyField('Listing',related_name='watchers')
 
 class Listing(models.Model):
     owner = models.ForeignKey('User',on_delete=models.CASCADE,related_name='listings')

@@ -6,6 +6,16 @@
 {% block body %}
 <h1>{{listing.title}}</h1>
 
+{% if user.is_authenticated %}
+{% if message %}
+<span class={{message.type}}>{{message.message}}</span>
+{% endif %}
+<form action="{% url 'add' listing.id%}" method="POST">
+    {% csrf_token %}
+    <input type="submit" value="watchlist"  class="btn btn-sm btn-secondary watchlist">
+</form>
+{%endif%}
+
 
 <div class="listing">
     <div class="img">
@@ -20,18 +30,18 @@
 
         <p class="owner">Listed By: {{listing.owner}}</p>
         <p>Category: No Category Listed</p>
-        {% if user.is_authenticated %}
-            <a href="">Add To Watchlist</a> 
-        {%endif%}
+  
         {% if is_owner %}
         <form action="" method="POST" class="close_listing">
-            <input class="btn btn-danger" value="Close listing">
+            {% csrf_token %}
+            <input class="btn btn-danger" type="submit" value="Close listing">
         </form>
         {% endif %}
     </div>
 </div>
 
 <form class="bid">
+    {% csrf_token %}
     <p class="amout"> ... TODO</p>
     <p> <input type="text" placeholder="Bid" class="bid"> </p> 
     <input type="submit" class="btn btn-primary" value="Place Bid">

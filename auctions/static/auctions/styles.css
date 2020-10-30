@@ -60,8 +60,14 @@ textarea {
 
 .error {
     color:red;
+    display: block;
+    margin-bottom: 10px;
 }
-
+.succes {
+    color:green;
+    display: block;
+    margin-bottom: 10px;
+}
 .close_listing {
     margin-top: 20px;
 }
@@ -91,5 +97,8 @@ input.bid:hover {
 
 section.comments {
     min-height: 400px;
-    
+}
+   
+input.watchlist {
+    margin-bottom: 50px;
 }
