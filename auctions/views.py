@@ -75,7 +75,7 @@ def create(request):
         if form.is_valid():
             user = User.objects.get(pk=request.user.id)
             new_listing = Listing(
-                master=user,
+                owner=user,
                 title=request.POST['title'],
                 description=request.POST['description'],
                 image=request.POST['image'],
@@ -94,4 +94,9 @@ def create(request):
     })
 
 def detail(request,listing_id):
-    pass
+    listing = Listing.objects.get(pk=listing_id)
+    user = User.objects.get(pk=request.user.id)
+    return render(request,"auctions/detail.html",{
+        'listing':listing,
+        'is_owner':listing.owner == user,
+    })

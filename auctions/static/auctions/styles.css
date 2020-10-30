@@ -32,31 +32,64 @@ textarea {
     background-color: #edf2f2;
 }
 
-.listing_link .listing{
+ .listing{
     display: flex;
 }
-.listing_link .listing img {
+ .listing img {
     width: 200px;
     height: 200px;
 }
-.listing_link .listing p {
+ .listing p {
     font-size: 20px;
 }
 
-.listing_link .listing .img {
+ .listing .img {
     width: 30%;
 }
 
-.listing_link .listing .date {
+.listing .date {
     font-size: 15px;
     color: grey
 }
 
-.listing_link .listing .description {
+.listing .description {
     width: 300px;
     font-size: 15px;
+    margin-bottom: 20px;
 }
 
 .error {
     color:red;
+}
+
+.close_listing {
+    margin-top: 20px;
+}
+
+.price {
+    font-size: 30px;
+}
+
+form.bid {
+    margin-top: 20px;
+    margin-bottom: 50px;
+}
+
+input.bid {
+    width: 100%;
+    border-radius: 5px;
+    border: 2px solid #e6e6e6;
+    height: 35px;
+    padding-left: 10px;
+    outline: none;
+    font-size: 20px;
+}
+
+input.bid:hover {
+    outline: none;
+}
+
+section.comments {
+    min-height: 400px;
+    
 }
