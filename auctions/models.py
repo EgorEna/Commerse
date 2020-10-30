@@ -1,9 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-
 class User(AbstractUser):
-    pass
+    watchlist = models.ManyToManyField(Listing,blank=True,related_name='watchers')
 
 class Listing(models.Model):
     master = models.ForeignKey(User,on_delete=models.CASCADE,related_name='listings')

@@ -89,9 +89,12 @@ def create(request):
                 "form": NewListingFor(request.POST),
                 "message": "Incorrectly entered data, make sure you entered everything correctly."
             })
-    return render (request,"auctions/create.html",{
+    return render(request,"auctions/create.html",{
         "form":NewListingFor()
     })
 
 def detail(request,listing_id):
-    pass
+    listing = Listing.objects.get(pk=listing_id)
+    return render(request,"auctions/detail.html",{
+        "listing":listing
+    })
