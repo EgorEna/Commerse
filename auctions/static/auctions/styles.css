@@ -16,3 +16,47 @@ textarea {
     display: block;
     margin-bottom: 10px;
 }
+
+.listing_link {
+    display: block;
+    color: black;
+    text-decoration: none;
+    padding: 30px;
+    border:1px solid #ededed;
+    margin-bottom: 20px;
+}
+
+.listing_link:hover{
+    color: black;
+    text-decoration: none;
+    background-color: #edf2f2;
+}
+
+.listing_link .listing{
+    display: flex;
+}
+.listing_link .listing img {
+    width: 200px;
+    height: 200px;
+}
+.listing_link .listing p {
+    font-size: 20px;
+}
+
+.listing_link .listing .img {
+    width: 30%;
+}
+
+.listing_link .listing .date {
+    font-size: 15px;
+    color: grey
+}
+
+.listing_link .listing .description {
+    width: 300px;
+    font-size: 15px;
+}
+
+.error {
+    color:red;
+}

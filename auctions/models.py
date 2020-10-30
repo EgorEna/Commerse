@@ -11,11 +11,12 @@ class Listing(models.Model):
     image = models.URLField(blank=True)
     description = models.TextField()
     bid = models.IntegerField()
+    date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.title}"
 
-class Bid():
+class Bid():    
     pass
 
 class Comment():
