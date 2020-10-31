@@ -1,12 +1,11 @@
 from django.contrib.auth import authenticate, login, logout
-from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
+from django.db import IntegrityError
 from django.shortcuts import render
 from django.urls import reverse
 from django import forms 
-from .models import *
 from datetime import *
-import time
+from .models import *
 
 class NewListingFor(forms.Form):
     title = forms.CharField()
@@ -79,7 +78,7 @@ def create(request):
                 title=request.POST['title'],
                 description=request.POST['description'],
                 image=request.POST['image'],
-                bid=request.POST['starting_bid']
+                price=request.POST['starting_bid']
             )
             new_listing.save()
             user.listings.add(new_listing)
@@ -93,17 +92,27 @@ def create(request):
         "form":NewListingFor()
     })
 
-def detail(request,listing_id):
+def detail(request,listing_id,dictionary={}):
     listing = Listing.objects.get(pk=listing_id)
+    current_bid = None
+    bids = listing.bids.all()
+    if bids:
+        current_bid = listing.bids.last()
     if request.user.is_authenticated:
         user = User.objects.get(pk=request.user.id)
-        return render(request,"auctions/detail.html",{
+        default = {
             'listing':listing,
             'is_owner':listing.owner == user,
-        })
-    return render(request,"auctions/detail.html",{
+            'bids': listing.bids.count(),
+            'current_bid':current_bid.member if current_bid.member.username != request.user.username else 'You',
+        }
+        res = {**default,**dictionary}
+        return render(request,"auctions/detail.html",res)
+    else:
+        return render(request,"auctions/detail.html",{
             'listing':listing,
-    })
+            'bids':listing.bids.count(),
+        })
 
 def watchlist(request):
     listings = request.user.watchlist.all()
@@ -113,24 +122,26 @@ def watchlist(request):
 
 def add(request,listing_id):
     listing = Listing.objects.get(pk=listing_id)
+    current_bid = None
+    bids = listing.bids.all()
+    if bids:
+        current_bid = listing.bids.last()
     if listing in request.user.watchlist.all():
-        return render(request,"auctions/detail.html",{
-        'listing':listing,
-        'is_owner':listing.owner == request.user,
-        'message': {
+        dictionary = {
+            'message': {
             'type':'error',
             'message':'Already added to watchlist',
+            }
         }
-    })    
+        return detail(request,listing_id,dictionary=dictionary)
     request.user.watchlist.add(listing)
-    return render(request,"auctions/detail.html",{
-        'listing':listing,
-        'is_owner':listing.owner == request.user,
-        'message': {
+    dictionary = { 
+           'message': {
             'type':'succes',
             'message': 'Succesfully added',
         }
-    })
+    }
+    return detail(request,listing_id,dictionary=dictionary)
 
 def remove(request,listing_id):
     if request.user.is_authenticated:
@@ -138,4 +149,22 @@ def remove(request,listing_id):
         request.user.watchlist.remove(listing)
         return HttpResponseRedirect(reverse("watchlist"))
     else:
-        raise Http404("You're not is_authenticated for such action")
+        raise Http404("You're not authenticated for such action")
+
+def bid(request,listing_id):
+    if request.method == 'POST':
+        listing = Listing.objects.get(pk=listing_id)
+        price = listing.price
+        if int(request.POST['bid']) > price:
+            new_bid = Bid(member=request.user,listing=listing)
+            new_bid.save()
+            listing.price = request.POST['bid']
+            listing.save()
+            return HttpResponseRedirect(reverse('detail',args=(listing_id,)))
+        else:
+            dictionary = {
+                'error_bid':'Your bid is smaller than current',
+            }
+            return detail(request,listing_id,dictionary=dictionary)
+    else:
+        raise Http404("You're not authenticated for such action")

@@ -10,14 +10,15 @@ class Listing(models.Model):
     title = models.CharField(max_length=64)
     image = models.URLField(blank=True)
     description = models.TextField()
-    bid = models.IntegerField()
+    price = models.IntegerField()
     date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.title}"
 
-class Bid():    
-    pass
+class Bid(models.Model):    
+    member = models.ForeignKey('User',on_delete=models.CASCADE,related_name='bids')
+    listing = models.ForeignKey('Listing',on_delete=models.CASCADE,related_name='bids')
 
-class Comment():
+class Comment(models.Model):
     content = models.ForeignKey('Listing',on_delete=models.CASCADE,related_name='commets')

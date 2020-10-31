@@ -77,7 +77,6 @@ textarea {
 }
 
 form.bid {
-    margin-top: 20px;
     margin-bottom: 50px;
 }
 
@@ -101,4 +100,10 @@ section.comments {
    
 input.watchlist {
     margin-bottom: 50px;
+}
+
+.amout {
+    margin-bottom: 5px;
+    color: grey;
+    font-size: 15px;
 }

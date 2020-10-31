@@ -22,7 +22,7 @@
         <img src={{listing.image}} alt="No image for this listing">
     </div>
     <div>
-        <span class="price"><strong>Price</strong>: ${{listing.bid}}</span>
+        <span class="price"><strong>Price</strong>: ${{listing.price}}</span>
         <p class="date">Created {{listing.date}},</p>
         <div class="description">
             {{listing.description}}
@@ -40,10 +40,20 @@
     </div>
 </div>
 
-<form class="bid">
+<p class="amout">
+    {% if bids %}
+        {{bids}} bid(s) so far. {{current_bid}} placed last bid.
+    {% else %}
+    No placed bids
+    {% endif %}
+</p>
+
+{% if error_bid %}
+<span class="error"> {{error_bid}}</span>
+{% endif %}
+<form class="bid" action="{% url 'bid' listing.id %}" method="POST">
     {% csrf_token %}
-    <p class="amout"> ... TODO</p>
-    <p> <input type="text" placeholder="Bid" class="bid"> </p> 
+    <p><input type="number" name="bid" placeholder="Bid" class="bid" required></p> 
     <input type="submit" class="btn btn-primary" value="Place Bid">
 </form>
 
