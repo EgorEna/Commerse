@@ -21,4 +21,6 @@ class Bid(models.Model):
     listing = models.ForeignKey('Listing',on_delete=models.CASCADE,related_name='bids')
 
 class Comment(models.Model):
-    content = models.ForeignKey('Listing',on_delete=models.CASCADE,related_name='commets')
+    listing = models.ForeignKey('Listing',on_delete=models.CASCADE,related_name='comments')
+    content = models.TextField(blank=False)
+    creater = models.ForeignKey('User',on_delete=models.CASCADE,related_name='comments')

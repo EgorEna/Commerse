@@ -32,7 +32,7 @@
         <p class="owner">Listed By: {{listing.owner}}</p>
         <p>Category: No Category Listed</p>
   
-        {% if active %}
+        {% if owner %}
             {% if active %}
             <form action="{% url 'close' listing.id%}" method="POST" class="close_listing">
                 {% csrf_token %}
@@ -43,7 +43,7 @@
     </div>
 </div>
 
-<p class="amout">
+<p class="amount">
     {% if bids %}
         {{bids}} bid(s) so far.
         {% if user.username == last_bid_member %}
@@ -69,16 +69,41 @@
     {% if user.username == last_bid_member %}
         <h3 class="result winner">Cagratulations! You won this autcion!</h3>
     {% else %}
-        <h3 class="result">This listing has already closed. Winner: {{last_bid_member}}</h3>
+        <h3 class="result">This listing is already closed. Winner: {{last_bid_member}}</h3>
     {% endif %}
 {% endif %}
-
-
-
-
-<h2>Comments </h2>
 <hr/>
+<form action="{% url 'comment' listing.id %}" method="POST">
+    {% csrf_token %}
+    <div class="md-form mb-4">
+        <label for="comment">Live your comment here</label>
+        <textarea id="comment" name='content' class="form-control" rows="3"></textarea>
+    </div>
+    <input type="submit" class="btn btn-primary" >
+</form>
+
+{% if comments %}
 <section class="comments">
-    
+    <h2>Other comments ({{comments.count}})</h2>
+    {% for comment in comments %}
+        <div class="comment">
+            <div class="head">{{comment.creater}}</div>
+            <div class="content">
+                {{comment.content}}
+                {% if user == comment.creater %}
+                <form action="{% url 'delete_comment' listing.id comment.id%}" method="POST" class="delete">
+                    {% csrf_token %}
+                    <input type="submit" value="delete">
+                </form>
+                {% endif %}
+            </div>
+
+        </div>
+
+    {% endfor %}
 </section>
+{% endif%} 
+     
+
+
 {% endblock%}

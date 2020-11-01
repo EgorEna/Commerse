@@ -96,6 +96,7 @@ def detail(request,listing_id,dictionary={}):
     listing = Listing.objects.get(pk=listing_id)
     last_bid_member = None
     bids = listing.bids.all()
+    comments = listing.comments.all()
     if bids:
         last_bid_member = listing.bids.last().member
     if request.user.is_authenticated:
@@ -105,7 +106,8 @@ def detail(request,listing_id,dictionary={}):
             'owner':listing.owner == user,
             'bids': listing.bids.count(),
             'active':listing.active,
-            'last_bid_member': last_bid_member.username
+            'last_bid_member': last_bid_member.username if last_bid_member else None,
+            'comments':comments
         }
         res = {**default,**dictionary}
         return render(request,"auctions/detail.html",res)
@@ -114,7 +116,8 @@ def detail(request,listing_id,dictionary={}):
             'listing':listing,
             'bids':listing.bids.count(),
             'last_bid_member':last_bid_member,
-            'active':listing.active
+            'active':listing.active,
+            'comments':comments,
         })
 
 def watchlist(request):
@@ -172,9 +175,29 @@ def bid(request,listing_id):
     else:
         raise Http404("You're not authenticated for such action")
 
-
 def close(request,listing_id):
     listing = Listing.objects.get(pk=listing_id)
     listing.active = False
     listing.save()
     return detail(request,listing_id)
+
+def comment(request,listing_id):
+    if request.user.is_authenticated:
+        listing = Listing.objects.get(pk=listing_id)
+        content = request.POST['content']
+        comment = Comment(
+            listing=listing,
+            content=content,
+            creater=request.user
+        )
+        comment.save()
+        return HttpResponseRedirect(reverse('detail',args=(listing_id,)))
+    else:
+        raise Http404('You re not signed to make such actions')
+
+def delete_comment(request,listing_id,comment_id):
+    if request.user.is_authenticated:
+        Comment.objects.get(pk=comment_id).delete()
+        return HttpResponseRedirect(reverse('detail',args=(listing_id,)))
+    else:
+        raise Http404('You re not signed to make such actions')

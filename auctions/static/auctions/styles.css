@@ -96,13 +96,14 @@ input.bid:hover {
 
 section.comments {
     min-height: 400px;
+    margin-top: 50px;
 }
    
 input.watchlist {
     margin-bottom: 50px;
 }
 
-.amout {
+.amount {
     margin-bottom: 5px;
     color: grey;
     font-size: 15px;
@@ -121,4 +122,52 @@ input.watchlist {
 
 .result.winner {
     color: green
+}
+
+hr{
+    margin-top: 50px;
+}
+
+div.comment {
+    max-width: 800px;
+    border-radius: 20px;
+    border: 2px solid #ededed;
+    overflow: hidden;
+    margin: 30px 0;
+}
+
+div.head {
+    padding: 20px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    background-color: #007bff;
+    color: white;
+    font-size: 20px;
+}
+
+div.content {
+    padding: 20px;
+}
+
+form.delete {
+    display: flex;
+    justify-content: flex-end;
+}
+
+form.delete input {
+    border: none;
+    background: none;
+    outline: none;
+    color: grey;
+    box-sizing: border-box;
+    min-height: 24px;
+    max-height: 24px;
+}
+
+form.delete input:active {
+    outline: none;
+}
+form.delete input:hover {
+    border-bottom: 1px solid #ededed;
 }
