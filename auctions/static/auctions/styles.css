@@ -107,3 +107,18 @@ input.watchlist {
     color: grey;
     font-size: 15px;
 }
+
+.result {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    font-size: 40px;
+    font-weight: 900;
+    margin-top: 30px;
+    color: orange;
+    background-image: url('https://st2.depositphotos.com/3894705/7819/i/450/depositphotos_78190918-stock-photo-background-with-diagonal-black-and.jpg');
+}
+
+.result.winner {
+    color: green
+}

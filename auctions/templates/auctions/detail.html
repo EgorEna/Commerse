@@ -7,13 +7,15 @@
 <h1>{{listing.title}}</h1>
 
 {% if user.is_authenticated %}
-{% if message %}
-<span class={{message.type}}>{{message.message}}</span>
-{% endif %}
-<form action="{% url 'add' listing.id%}" method="POST">
-    {% csrf_token %}
-    <input type="submit" value="watchlist"  class="btn btn-sm btn-secondary watchlist">
-</form>
+    {% if active %}
+        {% if message %}
+            <span class={{message.type}}>{{message.message}}</span>
+        {% endif %}
+        <form action="{% url 'add' listing.id%}" method="POST">
+            {% csrf_token %}
+            <input type="submit" value="watchlist"  class="btn btn-sm btn-secondary watchlist">
+        </form>
+    {% endif %}
 {%endif%}
 
 
@@ -31,31 +33,44 @@
         <p class="owner">Listed By: {{listing.owner}}</p>
         <p>Category: No Category Listed</p>
   
-        {% if is_owner %}
-        <form action="" method="POST" class="close_listing">
-            {% csrf_token %}
-            <input class="btn btn-danger" type="submit" value="Close listing">
-        </form>
+        {% if active %}
+            {% if active %}
+            <form action="{% url 'close' listing.id%}" method="POST" class="close_listing">
+                {% csrf_token %}
+                <input class="btn btn-danger" type="submit" value="Close listing">
+            </form>
+            {% endif %}
         {% endif %}
     </div>
 </div>
 
 <p class="amout">
     {% if bids %}
-        {{bids}} bid(s) so far. {{current_bid}} placed last bid.
+        {{bids}} bid(s) so far. {{current_bid_owner}} placed last bid.
     {% else %}
     No placed bids
     {% endif %}
 </p>
 
-{% if error_bid %}
-<span class="error"> {{error_bid}}</span>
+{% if active %}
+    {% if error_bid %}
+    <span class="error"> {{error_bid}}</span>
+    {% endif %}
+    <form class="bid" action="{% url 'bid' listing.id %}" method="POST">
+        {% csrf_token %}
+        <p><input type="number" name="bid" placeholder="Bid" class="bid" required></p> 
+        <input type="submit" class="btn btn-primary" value="Place Bid">
+    </form>
+{% else%}
+    {% if winner%}
+    <h3 class="result winner">Cagratulations! You won this autcion!</h3>
+    {%else%}
+    <h3 class="result">This listing has already closed. Winner: {{current_bid_owner}}</h3>
+    {% endif %}
 {% endif %}
-<form class="bid" action="{% url 'bid' listing.id %}" method="POST">
-    {% csrf_token %}
-    <p><input type="number" name="bid" placeholder="Bid" class="bid" required></p> 
-    <input type="submit" class="btn btn-primary" value="Place Bid">
-</form>
+
+
+
 
 <h2>Comments:</h2>
 <section class="comments">

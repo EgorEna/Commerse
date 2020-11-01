@@ -12,7 +12,7 @@ class Listing(models.Model):
     description = models.TextField()
     price = models.IntegerField()
     date = models.DateTimeField(auto_now=True)
-
+    active = models.BooleanField(default=True)
     def __str__(self):
         return f"{self.title}"
 

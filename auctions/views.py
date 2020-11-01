@@ -102,9 +102,11 @@ def detail(request,listing_id,dictionary={}):
         user = User.objects.get(pk=request.user.id)
         default = {
             'listing':listing,
-            'is_owner':listing.owner == user,
+            'owner':listing.owner == user,
             'bids': listing.bids.count(),
-            'current_bid':current_bid.member if current_bid.member.username != request.user.username else 'You',
+            'current_bid_owner':current_bid.member if current_bid.member.username != request.user.username else 'You',
+            'active':listing.active,
+            'winner': current_bid.member.username == request.user.username 
         }
         res = {**default,**dictionary}
         return render(request,"auctions/detail.html",res)
@@ -112,6 +114,8 @@ def detail(request,listing_id,dictionary={}):
         return render(request,"auctions/detail.html",{
             'listing':listing,
             'bids':listing.bids.count(),
+            'current_bid':current_bid.member,
+            'active':listing.active
         })
 
 def watchlist(request):
@@ -168,3 +172,10 @@ def bid(request,listing_id):
             return detail(request,listing_id,dictionary=dictionary)
     else:
         raise Http404("You're not authenticated for such action")
+
+
+def close(request,listing_id):
+    listing = Listing.objects.get(pk=listing_id)
+    listing.active = False
+    listing.save()
+    return detail(request,listing_id)
