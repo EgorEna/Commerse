@@ -94,19 +94,18 @@ def create(request):
 
 def detail(request,listing_id,dictionary={}):
     listing = Listing.objects.get(pk=listing_id)
-    current_bid = None
+    last_bid_member = None
     bids = listing.bids.all()
     if bids:
-        current_bid = listing.bids.last()
+        last_bid_member = listing.bids.last().member
     if request.user.is_authenticated:
-        user = User.objects.get(pk=request.user.id)
+        user = request.user
         default = {
             'listing':listing,
             'owner':listing.owner == user,
             'bids': listing.bids.count(),
-            'current_bid_owner':current_bid.member if current_bid.member.username != request.user.username else 'You',
             'active':listing.active,
-            'winner': current_bid.member.username == request.user.username 
+            'last_bid_member': last_bid_member.username
         }
         res = {**default,**dictionary}
         return render(request,"auctions/detail.html",res)
@@ -114,7 +113,7 @@ def detail(request,listing_id,dictionary={}):
         return render(request,"auctions/detail.html",{
             'listing':listing,
             'bids':listing.bids.count(),
-            'current_bid':current_bid.member,
+            'last_bid_member':last_bid_member,
             'active':listing.active
         })
 

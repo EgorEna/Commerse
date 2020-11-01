@@ -18,7 +18,6 @@
     {% endif %}
 {%endif%}
 
-
 <div class="listing">
     <div class="img">
         <img src={{listing.image}} alt="No image for this listing">
@@ -46,7 +45,12 @@
 
 <p class="amout">
     {% if bids %}
-        {{bids}} bid(s) so far. {{current_bid_owner}} placed last bid.
+        {{bids}} bid(s) so far.
+        {% if user.username == last_bid_member %}
+            Your bid is a current bid.
+        {%else%}
+            {{last_bid_member}} placed last bid.
+        {% endif%}
     {% else %}
     No placed bids
     {% endif %}
@@ -54,25 +58,26 @@
 
 {% if active %}
     {% if error_bid %}
-    <span class="error"> {{error_bid}}</span>
+        <span class="error"> {{error_bid}}</span>
     {% endif %}
-    <form class="bid" action="{% url 'bid' listing.id %}" method="POST">
-        {% csrf_token %}
-        <p><input type="number" name="bid" placeholder="Bid" class="bid" required></p> 
-        <input type="submit" class="btn btn-primary" value="Place Bid">
-    </form>
+        <form class="bid" action="{% url 'bid' listing.id %}" method="POST">
+            {% csrf_token %}
+            <p><input type="number" name="bid" placeholder="Bid" class="bid" required></p> 
+            <input type="submit" class="btn btn-primary" value="Place Bid">
+        </form>
 {% else%}
-    {% if winner%}
-    <h3 class="result winner">Cagratulations! You won this autcion!</h3>
-    {%else%}
-    <h3 class="result">This listing has already closed. Winner: {{current_bid_owner}}</h3>
+    {% if user.username == last_bid_member %}
+        <h3 class="result winner">Cagratulations! You won this autcion!</h3>
+    {% else %}
+        <h3 class="result">This listing has already closed. Winner: {{last_bid_member}}</h3>
     {% endif %}
 {% endif %}
 
 
 
 
-<h2>Comments:</h2>
+<h2>Comments </h2>
+<hr/>
 <section class="comments">
     
 </section>
