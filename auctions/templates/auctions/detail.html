@@ -4,6 +4,7 @@
 {% endblock %}
 
 {% block body %}
+
 <h1>{{listing.title}}</h1>
 
 {% if user.is_authenticated %}
@@ -57,14 +58,16 @@
 </p>
 
 {% if active %}
-    {% if error_bid %}
-        <span class="error"> {{error_bid}}</span>
-    {% endif %}
-        <form class="bid" action="{% url 'bid' listing.id %}" method="POST">
-            {% csrf_token %}
-            <p><input type="number" name="bid" placeholder="Bid" class="bid" required></p> 
-            <input type="submit" class="btn btn-primary" value="Place Bid">
-        </form>
+    {% if user != listing.owner%}
+        {% if error_bid %}
+            <span class="error"> {{error_bid}}</span>
+        {% endif %}
+            <form class="bid" action="{% url 'bid' listing.id %}" method="POST">
+                {% csrf_token %}
+                <p><input type="number" name="bid" placeholder="Bid" class="bid" required></p> 
+                <input type="submit" class="btn btn-primary" value="Place Bid">
+            </form>
+        {% endif %}
 {% else%}
     {% if user.username == last_bid_member %}
         <h3 class="result winner">Cagratulations! You won this autcion!</h3>
@@ -83,25 +86,26 @@
 </form>
 
 {% if comments %}
-<section class="comments">
-    <h2>Other comments ({{comments.count}})</h2>
-    {% for comment in comments %}
-        <div class="comment">
-            <div class="head">{{comment.creater}}</div>
-            <div class="content">
-                {{comment.content}}
-                {% if user == comment.creater %}
-                <form action="{% url 'delete_comment' listing.id comment.id%}" method="POST" class="delete">
-                    {% csrf_token %}
-                    <input type="submit" value="delete">
-                </form>
-                {% endif %}
-            </div>
-
-        </div>
-
-    {% endfor %}
-</section>
+    {% if user.is_authenticated%}
+        <section class="comments">
+            <h2>Other comments ({{comments.count}})</h2>
+            {% for comment in comments %}
+                <div class="comment">
+                    <div class="head">{{comment.creater}}</div>
+                    <div class="content">
+                        {{comment.content}}
+                        {% if user == comment.creater %}
+                            <form action="{% url 'delete_comment' listing.id comment.id%}" 
+                            method="POST" class="delete">
+                                {% csrf_token %}
+                                <input type="submit" value="delete">
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </section>
+    {% endif%} 
 {% endif%} 
      
 

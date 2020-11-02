@@ -171,3 +171,14 @@ form.delete input:active {
 form.delete input:hover {
     border-bottom: 1px solid #ededed;
 }
+
+span.closed {
+    display: flex;
+    margin-top: 20px;
+    color: red;
+    font-size: 30px;
+    font-weight: 900;
+    width: 100%;
+    justify-content: center;
+    background-image: url('https://st2.depositphotos.com/3894705/7819/i/450/depositphotos_78190918-stock-photo-background-with-diagonal-black-and.jpg');
+}

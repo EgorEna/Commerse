@@ -16,6 +16,9 @@
                     </div>
                 </div>
             </div>
+            {% if not listing.active%}
+            <span class="closed">THIS LISTING IS CLOSED</span>
+            {% endif %}
         </a>
     {% empty %}
         <h2>No listings :(</h2>
