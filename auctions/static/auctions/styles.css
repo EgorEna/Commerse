@@ -2,6 +2,13 @@ body {
     padding: 10px;
 }
 
+h2 {
+    margin-bottom: 50px;
+}
+
+form.create {
+    max-width: 40%;
+}
 input {
     display: block;
     margin-bottom: 15px;

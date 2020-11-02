@@ -7,6 +7,7 @@ from django import forms
 from datetime import *
 from .models import *
 
+
 class NewListingFor(forms.Form):
     title = forms.CharField()
     description = forms.CharField(widget=forms.Textarea)
@@ -15,7 +16,8 @@ class NewListingFor(forms.Form):
 
 def index(request):
     return render(request, "auctions/index.html",{
-        "listings":Listing.objects.all()
+        "listings":Listing.objects.all(),
+        'categories':Category.objects.all()
     })
 
 def login_view(request):
@@ -70,26 +72,22 @@ def register(request):
 
 def create(request):
     if request.method == "POST":
-        form = NewListingFor(request.POST)
-        if form.is_valid():
-            user = User.objects.get(pk=request.user.id)
-            new_listing = Listing(
-                owner=user,
-                title=request.POST['title'],
-                description=request.POST['description'],
-                image=request.POST['image'],
-                price=request.POST['starting_bid']
-            )
-            new_listing.save()
-            user.listings.add(new_listing)
-            return HttpResponseRedirect(reverse("index"))
-        else:
-            return render(request,"auctions/create.html",{
-                "form": NewListingFor(request.POST),
-                "message": "Incorrectly entered data, make sure you entered everything correctly."
-            })
+        title = request.POST['title']
+        description = request
+        new_listing = Listing(
+            title=request.POST['title'],
+            owner = request.user,
+            description = request.POST['description'],
+            image=request.POST['image'],
+            price=request.POST['starting_bid'],
+        )
+        if request.POST['category'] != 'No category':
+            category = Category.objects.get(pk=request.POST['category'])
+            new_listing.category = category
+        new_listing.save()
+        return HttpResponseRedirect(reverse("index"))
     return render (request,"auctions/create.html",{
-        "form":NewListingFor()
+        'categories':Category.objects.all()
     })
 
 def detail(request,listing_id,dictionary={}):
@@ -107,7 +105,9 @@ def detail(request,listing_id,dictionary={}):
             'bids': listing.bids.count(),
             'active':listing.active,
             'last_bid_member': last_bid_member.username if last_bid_member else None,
-            'comments':comments
+            'comments':comments,
+            'categories':Category.objects.all()
+
         }
         res = {**default,**dictionary}
         return render(request,"auctions/detail.html",res)
@@ -118,12 +118,14 @@ def detail(request,listing_id,dictionary={}):
             'last_bid_member':last_bid_member,
             'active':listing.active,
             'comments':comments,
+            'categories':Category.objects.all()
         })
 
 def watchlist(request):
     listings = request.user.watchlist.all()
     return render(request,"auctions/watchlist.html",{
         "listings":listings,
+        'categories':Category.objects.all()
     })
 
 def add(request,listing_id):
@@ -201,3 +203,11 @@ def delete_comment(request,listing_id,comment_id):
         return HttpResponseRedirect(reverse('detail',args=(listing_id,)))
     else:
         raise Http404('You re not signed to make such actions')
+
+def category(request,category_id):
+    category = Category.objects.get(pk=category_id)
+    return render(request,'auctions/category.html',{
+        "listings":Listing.objects.filter(category=category),
+        'categories':Category.objects.all(),
+        'category':category,
+    })

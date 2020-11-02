@@ -11,8 +11,10 @@ class Listing(models.Model):
     image = models.URLField(blank=True)
     description = models.TextField()
     price = models.IntegerField()
-    date = models.DateTimeField(auto_now=True)
+    date = models.DateTimeField(auto_now=True)  
     active = models.BooleanField(default=True)
+    category = models.ForeignKey('Category',on_delete=models.CASCADE, related_name='listings',blank=True,null=True)
+
     def __str__(self):
         return f"{self.title}"
 
@@ -24,3 +26,8 @@ class Comment(models.Model):
     listing = models.ForeignKey('Listing',on_delete=models.CASCADE,related_name='comments')
     content = models.TextField(blank=False)
     creater = models.ForeignKey('User',on_delete=models.CASCADE,related_name='comments')
+
+class Category(models.Model):
+    name = models.CharField(max_length=64)
+    def __str__(self):
+        return f"{self.name}"
