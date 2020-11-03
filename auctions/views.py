@@ -1,18 +1,12 @@
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.shortcuts import render
 from django.urls import reverse
 from django import forms 
 from datetime import *
 from .models import *
-
-
-class NewListingFor(forms.Form):
-    title = forms.CharField()
-    description = forms.CharField(widget=forms.Textarea)
-    image = forms.URLField()
-    starting_bid = forms.IntegerField(label='Starting Bid',min_value=5)
 
 def index(request):
     return render(request, "auctions/index.html",{
@@ -40,6 +34,7 @@ def login_view(request):
         return render(request, "auctions/login.html")
 
 
+@login_required(login_url='login')
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
@@ -70,6 +65,7 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
 
+@login_required(login_url='login')
 def create(request):
     if request.method == "POST":
         title = request.POST['title']
@@ -128,6 +124,7 @@ def watchlist(request):
         'categories':Category.objects.all()
     })
 
+@login_required(login_url='login')
 def add(request,listing_id):
     listing = Listing.objects.get(pk=listing_id)
     current_bid = None
@@ -159,30 +156,30 @@ def remove(request,listing_id):
     else:
         raise Http404("You're not authenticated for such action")
 
+@login_required(login_url='login')
 def bid(request,listing_id):
-    if request.method == 'POST':
-        listing = Listing.objects.get(pk=listing_id)
-        price = listing.price
-        if int(request.POST['bid']) > price:
-            new_bid = Bid(member=request.user,listing=listing)
-            new_bid.save()
-            listing.price = request.POST['bid']
-            listing.save()
-            return HttpResponseRedirect(reverse('detail',args=(listing_id,)))
-        else:
-            dictionary = {
-                'error_bid':'Your bid is smaller than current',
-            }
-            return detail(request,listing_id,dictionary=dictionary)
+    listing = Listing.objects.get(pk=listing_id)
+    price = listing.price
+    if int(request.POST['bid']) > price:
+        new_bid = Bid(member=request.user,listing=listing)
+        new_bid.save()
+        listing.price = request.POST['bid']
+        listing.save()
+        return HttpResponseRedirect(reverse('detail',args=(listing_id,)))
     else:
-        raise Http404("You're not authenticated for such action")
+        dictionary = {
+            'error_bid':'Your bid is smaller than current',
+        }
+        return detail(request,listing_id,dictionary=dictionary)
 
+@login_required(login_url='login')
 def close(request,listing_id):
     listing = Listing.objects.get(pk=listing_id)
     listing.active = False
     listing.save()
     return detail(request,listing_id)
 
+@login_required(login_url='login')
 def comment(request,listing_id):
     if request.user.is_authenticated:
         listing = Listing.objects.get(pk=listing_id)
@@ -197,6 +194,7 @@ def comment(request,listing_id):
     else:
         raise Http404('You re not signed to make such actions')
 
+@login_required(login_url='login')
 def delete_comment(request,listing_id,comment_id):
     if request.user.is_authenticated:
         Comment.objects.get(pk=comment_id).delete()
