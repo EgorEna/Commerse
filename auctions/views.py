@@ -181,26 +181,20 @@ def close(request,listing_id):
 
 @login_required(login_url='login')
 def comment(request,listing_id):
-    if request.user.is_authenticated:
-        listing = Listing.objects.get(pk=listing_id)
-        content = request.POST['content']
-        comment = Comment(
-            listing=listing,
-            content=content,
-            creater=request.user
-        )
-        comment.save()
-        return HttpResponseRedirect(reverse('detail',args=(listing_id,)))
-    else:
-        raise Http404('You re not signed to make such actions')
+    listing = Listing.objects.get(pk=listing_id)
+    content = request.POST['content']
+    comment = Comment(
+        listing=listing,
+        content=content,
+        creater=request.user
+    )
+    comment.save()
+    return HttpResponseRedirect(reverse('detail',args=(listing_id,)))
 
 @login_required(login_url='login')
 def delete_comment(request,listing_id,comment_id):
-    if request.user.is_authenticated:
-        Comment.objects.get(pk=comment_id).delete()
-        return HttpResponseRedirect(reverse('detail',args=(listing_id,)))
-    else:
-        raise Http404('You re not signed to make such actions')
+    Comment.objects.get(pk=comment_id).delete()
+    return HttpResponseRedirect(reverse('detail',args=(listing_id,)))
 
 def category(request,category_id):
     category = Category.objects.get(pk=category_id)
