@@ -8,18 +8,29 @@ watchlist_patterns = [
     path("remove/<int:listing_id>",views.remove,name='remove')
 ]
 
+app_name = "auctions"
+
+detail_actions_patterns = [
+    path("",views.detail,name='detail'),
+    path("bid",views.bid,name='bid'),
+    path("close",views.close,name='close'),
+    path("comment/",views.comment,name='comment'),
+    path("<int:comment_id>/delete_comment",views.delete_comment,name='delete_comment'),
+]
+
+detail_patterns = [
+    path("<int:listing_id>/",include(detail_actions_patterns))
+]
+
 urlpatterns = [
+    path("create/",views.create,name="create"),
     path("", views.index, name="index"),
     path("login", views.login_view, name="login"),
     path("logout", views.logout_view, name="logout"),
     path("register", views.register, name="register"),
-    path("create/",views.create,name="create"),
-    path("detail/<int:listing_id>",views.detail,name='detail'),
-    path("bid/<int:listing_id>",views.bid,name='bid'),
+    path("detail/",include(detail_patterns)),
+
     path("watchlist/",include(watchlist_patterns)),
-    path("close/<int:listing_id>",views.close,name='close'),
-    path('comment/<int:listing_id>',views.comment,name='comment'),
-    path('delete_comment/<int:listing_id>/<int:comment_id>',views.delete_comment,name='delete_comment'),
-    path('category/<int:category_id>',views.category,name='category')
+    path('category/<str:category_name>',views.category,name='category')
 ]
 

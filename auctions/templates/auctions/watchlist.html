@@ -5,7 +5,7 @@ Wathlist
 
 {% block body %}
     {% for listing in listings%}
-    <a href="{% url 'detail' listing.id%}" class="listing_link">
+    <a href="{% url 'auctions:detail' listing.id%}" class="listing_link">
         <div class="listing">
             <div class="img">
                 <img src={{listing.image}} alt="No image">
@@ -17,7 +17,7 @@ Wathlist
                 <div class="description">
                     {{listing.description}}
                 </div>
-            <form action="{% url 'remove' listing.id%}" method="POST" class="close_listing">
+            <form action="{% url 'auctions:remove' listing.id%}" method="POST" class="close_listing">
                 {% csrf_token %}
                 <input class="btn btn-danger" type="submit" value="Remove">
             </form>

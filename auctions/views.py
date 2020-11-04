@@ -16,7 +16,6 @@ def index(request):
 
 def login_view(request):
     if request.method == "POST":
-
         # Attempt to sign user in
         username = request.POST["username"]
         password = request.POST["password"]
@@ -25,7 +24,7 @@ def login_view(request):
         # Check if authentication successful
         if user is not None:
             login(request, user)
-            return HttpResponseRedirect(reverse("index"))
+            return HttpResponseRedirect(reverse("auctions:index"))
         else:
             return render(request, "auctions/login.html", {
                 "message": "Invalid username and/or password."
@@ -34,11 +33,10 @@ def login_view(request):
         return render(request, "auctions/login.html")
 
 
-@login_required(login_url='login')
+@login_required(login_url='auctions:login')
 def logout_view(request):
     logout(request)
-    return HttpResponseRedirect(reverse("index"))
-
+    return HttpResponseRedirect(reverse("auctions:index"))
 
 def register(request):
     if request.method == "POST":
@@ -61,11 +59,11 @@ def register(request):
                 "message": "Username already taken."
             })
         login(request, user)
-        return HttpResponseRedirect(reverse("index"))
+        return HttpResponseRedirect(reverse("auctions:index"))
     else:
         return render(request, "auctions/register.html")
 
-@login_required(login_url='login')
+@login_required(login_url='auctions:login')
 def create(request):
     if request.method == "POST":
         title = request.POST['title']
@@ -81,42 +79,34 @@ def create(request):
             category = Category.objects.get(pk=request.POST['category'])
             new_listing.category = category
         new_listing.save()
-        return HttpResponseRedirect(reverse("index"))
+        return HttpResponseRedirect(reverse("auctions:index"))
     return render (request,"auctions/create.html",{
         'categories':Category.objects.all()
     })
 
-def detail(request,listing_id,dictionary={}):
+def detail(request,listing_id:int,dictionary={}):
     listing = Listing.objects.get(pk=listing_id)
     last_bid_member = None
     bids = listing.bids.all()
     comments = listing.comments.all()
     if bids:
-        last_bid_member = listing.bids.last().member
-    if request.user.is_authenticated:
-        user = request.user
-        default = {
-            'listing':listing,
-            'owner':listing.owner == user,
-            'bids': listing.bids.count(),
-            'active':listing.active,
-            'last_bid_member': last_bid_member.username if last_bid_member else None,
-            'comments':comments,
-            'categories':Category.objects.all()
-
+        last_bid_member = listing.bids.last().member.username
+    default = {
+        'listing':listing,
+        'owner':listing.owner == request.user,
+        'bids': listing.bids.count(),
+        'active':listing.active,
+        'last_bid_member': last_bid_member,
+        'comments':comments,
+        'categories':Category.objects.all()
         }
+    if request.user.is_authenticated:
         res = {**default,**dictionary}
         return render(request,"auctions/detail.html",res)
     else:
-        return render(request,"auctions/detail.html",{
-            'listing':listing,
-            'bids':listing.bids.count(),
-            'last_bid_member':last_bid_member,
-            'active':listing.active,
-            'comments':comments,
-            'categories':Category.objects.all()
-        })
+        return render(request,"auctions/detail.html",default)
 
+@login_required(login_url='auctions:login')
 def watchlist(request):
     listings = request.user.watchlist.all()
     return render(request,"auctions/watchlist.html",{
@@ -124,8 +114,8 @@ def watchlist(request):
         'categories':Category.objects.all()
     })
 
-@login_required(login_url='login')
-def add(request,listing_id):
+@login_required(login_url='auctions:login')
+def add(request,listing_id:int):
     listing = Listing.objects.get(pk=listing_id)
     current_bid = None
     bids = listing.bids.all()
@@ -148,16 +138,16 @@ def add(request,listing_id):
     }
     return detail(request,listing_id,dictionary=dictionary)
 
-def remove(request,listing_id):
+def remove(request,listing_id:int):
     if request.user.is_authenticated:
         listing = Listing.objects.get(pk=listing_id)
         request.user.watchlist.remove(listing)
-        return HttpResponseRedirect(reverse("watchlist"))
+        return HttpResponseRedirect(reverse("auctions:watchlist"))
     else:
         raise Http404("You're not authenticated for such action")
 
-@login_required(login_url='login')
-def bid(request,listing_id):
+@login_required(login_url='auctions:login')
+def bid(request,listing_id:int):
     listing = Listing.objects.get(pk=listing_id)
     price = listing.price
     if int(request.POST['bid']) > price:
@@ -165,22 +155,22 @@ def bid(request,listing_id):
         new_bid.save()
         listing.price = request.POST['bid']
         listing.save()
-        return HttpResponseRedirect(reverse('detail',args=(listing_id,)))
+        return HttpResponseRedirect(reverse('auctions:detail',args=(listing_id,)))
     else:
         dictionary = {
             'error_bid':'Your bid is smaller than current',
         }
         return detail(request,listing_id,dictionary=dictionary)
 
-@login_required(login_url='login')
-def close(request,listing_id):
+@login_required(login_url='auctions:login')
+def close(request,listing_id:int):
     listing = Listing.objects.get(pk=listing_id)
     listing.active = False
     listing.save()
     return detail(request,listing_id)
 
-@login_required(login_url='login')
-def comment(request,listing_id):
+@login_required(login_url='auctions:login')
+def comment(request,listing_id:int):
     listing = Listing.objects.get(pk=listing_id)
     content = request.POST['content']
     comment = Comment(
@@ -189,15 +179,15 @@ def comment(request,listing_id):
         creater=request.user
     )
     comment.save()
-    return HttpResponseRedirect(reverse('detail',args=(listing_id,)))
+    return HttpResponseRedirect(reverse('auctions:detail',args=(listing_id,)))
 
-@login_required(login_url='login')
-def delete_comment(request,listing_id,comment_id):
+@login_required(login_url='auctions:login')
+def delete_comment(request,listing_id:int,comment_id:int):
     Comment.objects.get(pk=comment_id).delete()
-    return HttpResponseRedirect(reverse('detail',args=(listing_id,)))
+    return HttpResponseRedirect(reverse('auctions:detail',args=(listing_id,)))
 
-def category(request,category_id):
-    category = Category.objects.get(pk=category_id)
+def category(request,category_name:str):
+    category = Category.objects.get(name=category_name)
     return render(request,'auctions/category.html',{
         "listings":Listing.objects.filter(category=category),
         'categories':Category.objects.all(),

@@ -23,7 +23,7 @@
         </div>
         <ul class="nav">
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'index' %}">Active Listings</a>
+                <a class="nav-link" href="{% url 'auctions:index' %}">Active Listings</a>
             </li>
             <li class="nav-item">
                 <div class="dropdown">
@@ -34,30 +34,29 @@
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                         {% for category in categories %}
-                        <a href="{% url 'category' category.id %}" class="dropdown-item">{{category}}</a>
+                        <a href="{% url 'auctions:category' category.name %}" class="dropdown-item">{{category}}</a>
                         {% endfor %}
                     </div>
                   </div>
             </li>
             {% if user.is_authenticated %}
                 <li class="nav-item">
-                    <a href="{% url 'watchlist' %}" class="nav-link">Watchlist</a>
+                    <a href="{% url 'auctions:watchlist' %}" class="nav-link">Watchlist</a>
                 </li>
                 </li>
                 <li class="nav-item">
-                    <a href="{% url 'create' %}" class="nav-link">Create Listing</a>
+                    <a href="{% url 'auctions:create' %}" class="nav-link">Create Listing</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+                    <a class="nav-link" href="{% url 'auctions:logout' %}">Log Out</a>
                 </li>
-
 
             {% else %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'login' %}">Log In</a>
+                    <a class="nav-link" href="{% url 'auctions:login' %}">Log In</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'register' %}">Register</a>
+                    <a class="nav-link" href="{% url 'auctions:register' %}">Register</a>
                 </li>
             {% endif %}
         </ul>

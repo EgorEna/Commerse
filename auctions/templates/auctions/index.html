@@ -2,7 +2,7 @@
 {% block body %}
     <h2>Active Listings</h2>
     {% for listing in listings%}
-        <a href="{% url 'detail' listing.id%}" class="listing_link">
+        <a href="{% url 'auctions:detail' listing.id%}" class="listing_link">
             <div class="listing">
                 <div class="img">
                     <img src={{listing.image}} alt="No image">

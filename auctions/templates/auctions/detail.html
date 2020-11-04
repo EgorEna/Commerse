@@ -1,6 +1,6 @@
 {% extends "auctions/layout.html" %}
 {% block title %}
-    {{listing.title}}
+{{listing.title}}
 {% endblock %}
 
 {% block body %}
@@ -8,15 +8,15 @@
 <h1>{{listing.title}}</h1>
 
 {% if user.is_authenticated %}
-    {% if active %}
-        {% if message %}
-            <span class={{message.type}}>{{message.message}}</span>
-        {% endif %}
-        <form action="{% url 'add' listing.id%}" method="POST">
-            {% csrf_token %}
-            <input type="submit" value="watchlist"  class="btn btn-sm btn-secondary watchlist">
-        </form>
-    {% endif %}
+{% if active %}
+{% if message %}
+<span class={{message.type}}>{{message.message}}</span>
+{% endif %}
+<form action="{% url 'auctions:add' listing.id%}" method="POST">
+    {% csrf_token %}
+    <input type="submit" value="watchlist" class="btn btn-sm btn-secondary watchlist">
+</form>
+{% endif %}
 {%endif%}
 
 <div class="listing">
@@ -33,87 +33,88 @@
         <p class="owner">Listed By: {{listing.owner}}</p>
         <p>Category:
             {% if listing.category %}
-                {{listing.category}}
+            {{listing.category}}
             {% else %}
-                No Category Listed
+            No Category Listed
             {%endif%}
-            </p>
-  
+        </p>
+
         {% if owner %}
-            {% if active %}
-            <form action="{% url 'close' listing.id%}" method="POST" class="close_listing">
-                {% csrf_token %}
-                <input class="btn btn-danger" type="submit" value="Close listing">
-            </form>
-            {% endif %}
+        {% if active %}
+        <form action="{% url 'auctions:close' listing.id%}" method="POST" class="close_listing">
+            {% csrf_token %}
+            <input class="btn btn-danger" type="submit" value="Close listing">
+        </form>
+        {% endif %}
         {% endif %}
     </div>
 </div>
 
 <p class="amount">
     {% if bids %}
-        {{bids}} bid(s) so far.
-        {% if user.username == last_bid_member %}
-            Your bid is a current bid.
-        {%else%}
-            {{last_bid_member}} placed last bid.
-        {% endif%}
+    {{bids}} bid(s) so far.
+    {% if user.username == last_bid_member %}
+    Your bid is a current bid.
+    {%else%}
+    {{last_bid_member}} placed last bid.
+    {% endif%}
     {% else %}
     No placed bids
     {% endif %}
 </p>
-
+{% if user.is_authenticated %}
 {% if active %}
-    {% if user != listing.owner%}
-        {% if error_bid %}
-            <span class="error"> {{error_bid}}</span>
-        {% endif %}
-            <form class="bid" action="{% url 'bid' listing.id %}" method="POST">
-                {% csrf_token %}
-                <p><input type="number" name="bid" placeholder="Bid" class="bid" required></p> 
-                <input type="submit" class="btn btn-primary" value="Place Bid">
-            </form>
-        {% endif %}
-{% else%}
-    {% if user.username == last_bid_member %}
-        <h3 class="result winner">Cagratulations! You won this autcion!</h3>
-    {% else %}
-        <h3 class="result">This listing is already closed. Winner: {{last_bid_member}}</h3>
-    {% endif %}
+{% if user != listing.owner%}
+{% if error_bid %}
+<span class="error"> {{error_bid}}</span>
 {% endif %}
-<hr/>
-<form action="{% url 'comment' listing.id %}" method="POST">
+<form class="bid" action="{% url 'auctions:bid' listing.id %}" method="POST">
+    {% csrf_token %}
+    <p><input type="number" name="bid" placeholder="Bid" class="bid" required></p>
+    <input type="submit" class="btn btn-primary" value="Place Bid">
+</form>
+{% endif %}
+{% else%}
+{% if user.username == last_bid_member %}
+<h3 class="result winner">Cagratulations! You won this autcion!</h3>
+{% else %}
+<h3 class="result">This listing is already closed. Winner: {{last_bid_member}}</h3>
+{% endif %}
+{% endif %}
+{% endif %}
+<hr />
+
+{% if user.is_authenticated %}
+<form action="{% url 'auctions:comment' listing.id %}" method="POST">
     {% csrf_token %}
     <div class="md-form mb-4">
         <label for="comment">Live your comment here</label>
         <textarea id="comment" name='content' class="form-control" rows="3"></textarea>
     </div>
-    <input type="submit" class="btn btn-primary" >
+    <input type="submit" class="btn btn-primary">
 </form>
+{% endif %}
 
 {% if comments %}
-    {% if user.is_authenticated%}
-        <section class="comments">
-            <h2>Other comments ({{comments.count}})</h2>
-            {% for comment in comments %}
-                <div class="comment">
-                    <div class="head">{{comment.creater}}</div>
-                    <div class="content">
-                        {{comment.content}}
-                        {% if user == comment.creater %}
-                            <form action="{% url 'delete_comment' listing.id comment.id%}" 
-                            method="POST" class="delete">
-                                {% csrf_token %}
-                                <input type="submit" value="delete">
-                            </form>
-                        {% endif %}
-                    </div>
-                </div>
-            {% endfor %}
-        </section>
-    {% endif%} 
-{% endif%} 
-     
+<section class="comments">
+    <h2>Comments ({{comments.count}})</h2>
+    {% for comment in comments %}
+    <div class="comment">
+        <div class="head">{{comment.creater}}</div>
+        <div class="content">
+            {{comment.content}}
+            {% if user == comment.creater %}
+            <form action="{% url 'auctions:delete_comment' listing.id comment.id%}" method="POST" class="delete">
+                {% csrf_token %}
+                <input type="submit" value="delete">
+            </form>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</section>
+{% endif%}
+
 
 
 {% endblock%}
