@@ -4,29 +4,29 @@ Wathlist
 {% endblock %}
 
 {% block body %}
-    {% for listing in listings%}
-    <a href="{% url 'auctions:detail' listing.id%}" class="listing_link">
-        <div class="listing">
-            <div class="img">
-                <img src={{listing.image}} alt="No image">
+{% for listing in listings%}
+<a href="{% url 'auctions:detail' listing.id%}" class="listing_link">
+    <div class="listing">
+        <div class="img">
+            <img src={{listing.image}} alt="No image">
+        </div>
+        <div>
+            <p><strong>{{listing}}</strong></p>
+            <strong>Price</strong>: ${{listing.price}}
+            <p class="date">Created {{listing.date}},</p>
+            <div class="description">
+                {{listing.description}}
             </div>
-            <div>
-                <p><strong>{{listing}}</strong></p>
-                <strong>Price</strong>: ${{listing.price}}
-                <p class="date">Created {{listing.date}},</p>
-                <div class="description">
-                    {{listing.description}}
-                </div>
             <form action="{% url 'auctions:remove' listing.id%}" method="POST" class="close_listing">
                 {% csrf_token %}
                 <input class="btn btn-danger" type="submit" value="Remove">
             </form>
-            </div>
-
         </div>
-    </a>
- 
-    {% empty %}
-        <h1>No watching listings</h1>
-    {% endfor %}
+
+    </div>
+</a>
+
+{% empty %}
+<h1>No watching listings</h1>
+{% endfor %}
 {% endblock%}

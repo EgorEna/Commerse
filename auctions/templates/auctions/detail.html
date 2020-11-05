@@ -13,6 +13,7 @@
 <span class={{message.type}}>{{message.message}}</span>
 {% endif %}
 <form action="{% url 'auctions:add' listing.id%}" method="POST">
+<form action="{% url 'auctions:add' listing.id%}" method="POST">
     {% csrf_token %}
     <input type="submit" value="watchlist" class="btn btn-sm btn-secondary watchlist">
 </form>
@@ -82,7 +83,7 @@
 {% endif %}
 {% endif %}
 {% endif %}
-<hr />
+<hr/>
 
 {% if user.is_authenticated %}
 <form action="{% url 'auctions:comment' listing.id %}" method="POST">
@@ -114,7 +115,6 @@
     {% endfor %}
 </section>
 {% endif%}
-
 
 
 {% endblock%}
