@@ -2,7 +2,7 @@
 My second project from CS50
 ## Commerce  app
 
-This app is something something similar to ebay auctions service.
+This app is something similar to ebay auctions service.
 Whole project is based on "traditional" multi-page way.
 
 **How to use it?**
